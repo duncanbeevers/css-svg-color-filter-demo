@@ -1,17 +1,27 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8"/>
     <title>SVG Matrix</title>
     <style>
 
 * {
   box-sizing: border-box;
+}
+
+body {
   font-family: sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+section {
+  margin: 12px;
 }
 
 #demo {
   width: 450px;
-  /*background-color: black;*/
+  color: white;
   background-image: url(http://thecatapi.com/api/images/get?format=src&type=gif);
   font-size: 48px;
   display: flex;
@@ -19,6 +29,22 @@
   justify-content: center;
   padding: 80px;
   letter-spacing: 24px;
+}
+
+#markup-container {
+  font-family: monospace;
+  width: 450px;
+  word-wrap: break-word;
+}
+
+#base64-markup-container {
+  font-family: monospace;
+  width: 450px;
+  word-wrap: break-word;
+}
+
+#credit {
+  width: 100%;
 }
 
 .controls-row {
@@ -51,16 +77,33 @@ label {
 
   <body>
 
-    <h2>CSS</h2>
+    <section id="controls-container"></section>
 
-    <div id="demo-container">
-      <div id="demo">🌈🚄🍎🎃😈♠️🇺🇸🍆 hello friend!</div>
-    </div>
+    <section>
+      <h2>Demo</h2>
+      <div id="demo-container">
+        <div id="demo">🌈🚄🍎🎃😈♠️🇺🇸🍆 hello friend!</div>
+      </div>
+    </section>
 
-    <div id="credit">
-      <a href="http://thecatapi.com/">the cat API</a>
-    </div>
+    <section>
+      <h2>Filter Markup</h2>
+      <div id="markup-container"></div>
+    </section>
 
+    <section>
+      <h2>Base64 URL Filter Markup</h2>
+      <div id="base64-markup-container"></div>
+    </section>
+
+    <section id="credit">
+      <h2>Credit</h2>
+      <div>
+        <a href="http://thecatapi.com/">the cat API</a>
+        <a href="http://lindsey.chat/">lindsey.chat</a>
+        <a href="https://css-tricks.com/color-filters-can-turn-your-gray-skies-blue/">Color Filters</a>
+      </div>
+    </section>
 
     <script>
 window.main();

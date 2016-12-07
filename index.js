@@ -58,6 +58,7 @@
     rangeNode.min = '-1';
     rangeNode.max = '1';
     rangeNode.step = '0.001';
+    rangeNode.tabIndex = '-1';
     rangeNode.addEventListener('input', onControlNodeChange);
 
     const numericNode = createElement('input');
@@ -85,11 +86,6 @@
       acc.appendChild(createControlsRowNode(row));
       return acc;
     }, controlsNode);
-  }
-
-  function makeControls() {
-    const controlsNode = createControlsNode();
-    window.document.body.appendChild(controlsNode);
   }
 
   let filterCount = 0;
@@ -148,7 +144,7 @@
     for (let name in state) {
       const inputs = window.document.querySelectorAll(`input[name=${name}]`);
       inputs.forEach(function (input) {
-        input.value = state[name];
+        input.value = state[name].toFixed(3);
       });
     }
   }
@@ -161,36 +157,71 @@
   //   Nra: 0,     Nga: 0,     Nba: 0,     Naa: 1, Ca: 0
   // };
 
-  // Hulky
+  // // Hulky
+  // const state = {
+  //   Nrr: -1,   Ngr: 0.923, Nbr: 0.189, Nar: 0, Cr: 0,
+  //   Nrg: 0.677, Ngg: 0.123, Nbg: 0.168, Nag: 0, Cg: 0,
+  //   Nrb: -0.462, Ngb: 0.277, Nbb: 0.131, Nab: 0, Cb: 0,
+  //   Nra: 0, Nga: -0.954, Nba: 0, Naa: 1, Ca: 0
+  // }
+
+  // Pure Green
   const state = {
-    Nrr: -1,   Ngr: 0.923, Nbr: 0.189, Nar: 0, Cr: 0,
-    Nrg: 0.677, Ngg: 0.123, Nbg: 0.168, Nag: 0, Cg: 0,
-    Nrb: -0.462, Ngb: 0.277, Nbb: 0.131, Nab: 0, Cb: 0,
-    Nra: 0, Nga: -0.954, Nba: 0, Naa: 1, Ca: 0
+    Nrr: 0, Ngr: 0, Nbr: 0, Nar: 0, Cr: 0,
+    Nrg: 0, Ngg: 1, Nbg: 0, Nag: 0, Cg: 0,
+    Nrb: 0, Ngb: 0, Nbb: 0, Nab: 0, Cb: 0,
+    Nra: 0, Nga: 0, Nba: 0, Naa: 1, Ca: 0
   }
 
+  const encodeFilter = false;
+
   function main() {
-    makeControls();
+    const controlsContainerNode = window.document.getElementById('controls-container');
+    const controlsNode = createControlsNode();
+    controlsContainerNode.appendChild(controlsNode);
+
     const filter = makeFilter();
     window.document.body.appendChild(filter.node);
 
     const demoNode = window.document.getElementById('demo');
-    demoNode.style.filter = `url(#${filter.node.id})`
+
+    const markupContainerNode = window.document.getElementById('markup-container');
+    const base64MarkupContainerNode = window.document.getElementById('base64-markup-container')
 
     register(function (action) {
       if (action.type !== 'updateState') {
         return;
       }
 
+      let scheduleUpdate = true;
+
       if (action.name) {
-        state[action.name] = action.value;
+        const value = parseFloat(action.value);
+        if (value !== NaN) {
+          state[action.name] = parseFloat(action.value);
+          scheduleUpdate = true;
+        } else {
+          scheduleUpdate = false;
+        }
       }
 
-      const parent = demoNode.parentElement;
-      parent.removeChild(demoNode);
-      updateControls(state);
-      filter.setValues(state);
-      parent.appendChild(demoNode);
+      if (scheduleUpdate) {
+        updateControls(state);
+        filter.setValues(state);
+
+        const filterMarkup = filter.node.outerHTML;
+        const wrappedFilterMarkup = `<svg xmlns="http://www.w3.org/2000/svg">${filterMarkup}</svg>`;
+        const base64EncodedMarkup = window.btoa(wrappedFilterMarkup);
+        const filterMarkupUrl = `data:image/svg+xml;base64,${window.encodeURIComponent(base64EncodedMarkup)}#${filter.node.id}`;
+        markupContainerNode.innerText = filterMarkup;
+        base64MarkupContainerNode.innerText = filterMarkupUrl;
+
+        if (encodeFilter) {
+          demoNode.style.filter = `url(${filterMarkupUrl})`
+        } else {
+          demoNode.style.filter = `url(#${filter.node.id})`
+        }
+      }
     });
 
     dispatch({ type: 'updateState' });
