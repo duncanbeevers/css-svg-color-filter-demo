@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <title>SVG Matrix</title>
+    <style>
+
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+#demo {
+  width: 450px;
+  /*background-color: black;*/
+  background-image: url(http://thecatapi.com/api/images/get?format=src&type=gif);
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  letter-spacing: 24px;
+}
+
+.controls-row {
+  display: flex;
+}
+
+.controls-row input[type=range] {
+  width: 80px;
+}
+.controls-row input[type=number] {
+  width: 80px;
+  font-size: 14px;
+  padding: 8px;
+}
+
+.controls-control {
+  padding: 24px;
+}
+
+label {
+  display: inline-block;
+  width: 48px;
+}
+
+    </style>
+
+    <script src="index.js"></script>
+
+  </head>
+
+  <body>
+
+    <h2>CSS</h2>
+
+    <div id="demo-container">
+      <div id="demo">🌈🚄🍎🎃😈♠️🇺🇸🍆 hello friend!</div>
+    </div>
+
+    <div id="credit">
+      <a href="http://thecatapi.com/">the cat API</a>
+    </div>
+
+
+    <script>
+window.main();
+    </script>
+  </body>
+</html>
