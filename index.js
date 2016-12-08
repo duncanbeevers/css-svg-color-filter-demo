@@ -46,13 +46,17 @@
 
   function createControlNode(name) {
     const controlNode = createElement('div');
-    controlNode.classList.add('controls-control')
+    controlNode.classList.add('controls-control');
     const labelNode = createElement('label');
     controlNode.appendChild(labelNode);
     labelNode.appendChild(createText(name));
 
+    const inputsNode = createElement('div');
+    inputsNode.classList.add('controls-inputs');
+    controlNode.appendChild(inputsNode);
+
     const rangeNode = createElement('input');
-    controlNode.appendChild(rangeNode);
+    inputsNode.appendChild(rangeNode);
     rangeNode.type = 'range';
     rangeNode.name = name;
     rangeNode.min = '-1';
@@ -62,7 +66,7 @@
     rangeNode.addEventListener('input', onControlNodeChange);
 
     const numericNode = createElement('input');
-    controlNode.appendChild(numericNode);
+    inputsNode.appendChild(numericNode);
     numericNode.type = 'number';
     numericNode.name = name;
     numericNode.addEventListener('input', onControlNodeChange);
@@ -95,6 +99,8 @@
 
     const filterNode = createSVGElement('filter');
     filterNode.id = `filterNode--${filterCount}`;
+    filterNode.setAttribute('colorInterpolationFilters', 'sRGB');
+
 
     const feColorMatrixNode = createSVGElement('feColorMatrix');
     filterNode.appendChild(feColorMatrixNode);
@@ -133,6 +139,7 @@
     }
 
     const filter = {
+      id: filterNode.id,
       node: filterNode,
       setValues: setValues
     };
@@ -168,7 +175,7 @@
   // Pure Green
   const state = {
     Nrr: 0, Ngr: 0, Nbr: 0, Nar: 0, Cr: 0,
-    Nrg: 0, Ngg: 1, Nbg: 0, Nag: 0, Cg: 0,
+    Nrg: 0.33, Ngg: 0.33, Nbg: 0.33, Nag: 0, Cg: 0,
     Nrb: 0, Ngb: 0, Nbb: 0, Nab: 0, Cb: 0,
     Nra: 0, Nga: 0, Nba: 0, Naa: 1, Ca: 0
   }
@@ -176,17 +183,18 @@
   const encodeFilter = false;
 
   function main() {
+    const demoNode = window.document.getElementById('demo');
+
     const controlsContainerNode = window.document.getElementById('controls-container');
+    const markupContainerNode = window.document.getElementById('markup-container');
+    const base64MarkupContainerNode = window.document.getElementById('base64-markup-container')
+    const filterContainerNode = window.document.getElementById('filter-container');
+
     const controlsNode = createControlsNode();
     controlsContainerNode.appendChild(controlsNode);
 
     const filter = makeFilter();
-    window.document.body.appendChild(filter.node);
-
-    const demoNode = window.document.getElementById('demo');
-
-    const markupContainerNode = window.document.getElementById('markup-container');
-    const base64MarkupContainerNode = window.document.getElementById('base64-markup-container')
+    filterContainerNode.appendChild(filter.node);
 
     register(function (action) {
       if (action.type !== 'updateState') {
@@ -212,15 +220,12 @@
         const filterMarkup = filter.node.outerHTML;
         const wrappedFilterMarkup = `<svg xmlns="http://www.w3.org/2000/svg">${filterMarkup}</svg>`;
         const base64EncodedMarkup = window.btoa(wrappedFilterMarkup);
-        const filterMarkupUrl = `data:image/svg+xml;base64,${window.encodeURIComponent(base64EncodedMarkup)}#${filter.node.id}`;
+        const filterMarkupUrl = `data:image/svg+xml;base64,${window.encodeURIComponent(base64EncodedMarkup)}#${filter.id}`;
         markupContainerNode.innerText = filterMarkup;
         base64MarkupContainerNode.innerText = filterMarkupUrl;
 
-        if (encodeFilter) {
-          demoNode.style.filter = `url(${filterMarkupUrl})`
-        } else {
-          demoNode.style.filter = `url(#${filter.node.id})`
-        }
+        const filterUrl = encodeFilter ? filterMarkupUrl : `#${filter.id}`;
+        demoNode.style.filter = `url(${filterUrl})`;
       }
     });
 
